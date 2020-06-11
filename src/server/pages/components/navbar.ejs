@@ -7,15 +7,33 @@
     <div class="collapse navbar-collapse" id="navbarColor02">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">Bots</a>
+          <a class="nav-link" href="/bots">Bots</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#">About</a>
+          <a class="nav-link" href="/about">About</a>
         </li>
-      </ul>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <% if (user) { %>
+                <li class="nav-item dropdown" style="text-align:right;">
+                    <a class="nav-link dropdown-toggle btn btn-primary" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" style="margin: 0 10px; color: white !important; padding: 8px 18px;"><%= user.username %>#<%= user.discriminator %></a>
+                        <div class="dropdown-menu">
+                        <a class="dropdown-item" href="/@me">Profile</a>
+                        <a class="dropdown-item" href="/@me/bots">Your Bots</a>
+                        <a class="dropdown-item" href="/logout">Logout</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/queue">Queue</a>
+                    </div>
+                </li>
+            <% } else { %>
+                <li class="nav-item">
+                    <a href="/login" class="btn btn-primary">Login</a>
+                </li>
+            <% } %>
+        </ul>
       <!-- <form class="form-inline my-2 my-lg-0">
         <input class="form-control mr-sm-2" type="text" placeholder="Search">
         <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>

@@ -46,7 +46,7 @@ module.exports = class Xeno extends Client {
             });
 
             /* Database */
-            this.database.Queue.sync({ force: true }).then(() => this.logger.log(`Loaded Queue (Database)`));
+            this.database.Queue.sync({ force: false }).then(() => this.logger.log(`Loaded Queue (Database)`));
 
             /* Server */
             require("./server")(this).then(() => this.logger.log(`Listening on PORT ${this.config.port} (Server)`));

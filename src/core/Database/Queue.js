@@ -8,6 +8,15 @@ module.exports = (sequelize, Sequelize) => (
         prefix: {
             type: Sequelize.STRING,
             allowNull: false
+        },
+        ownerID: {
+            type: Sequelize.STRING,
+            allowNull: false
+        },
+        testing: {
+            type: Sequelize.BOOLEAN,
+            defaultValue: false,
+            allowNull: false
         }
     })
 );

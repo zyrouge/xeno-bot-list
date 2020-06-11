@@ -9,9 +9,10 @@
     <link rel="stylesheet" href="static/bootstrap.min.css">
     <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
-    <%- include("./components/navbar.ejs") %>
+    <%- include("./components/navbar.ejs", { bot, user }) %>
 
     <div class="container">
         <div class="jumbotron">
@@ -23,6 +24,8 @@
             </p> -->
         </div>
         <div class="bots-list">
+            <br>
+            <h5>Awaiting Approval</h5>
             <table class="table table-hover">
                 <thead>
                   <tr>
@@ -33,19 +36,89 @@
                     <th scope="col">Actions</th>
                   </tr>
                 </thead>
-                <tbody>
-                    <% queue.forEach((queueBot, index) => { %>
-                        <tr class="table-light">
-                            <th scope="row"><%= index + 1 %>.</th>
-                            <td><%= queueBot.prefix %></td>
-                            <td><%= "hdewvfhe" %></td>
-                            <td><%= queueBot.botID %></td>
-                            <td><button type="button" class="btn btn-primary">Invite</button></td>
-                        </tr>
-                    <% }); %>
-                </tbody>
+                <tbody class="bots-list-body"></tbody>
+            </table> 
+        </div>
+        <div class="progress-list">
+            <br>
+            <h5>In Progress</h5>
+            <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">Prefix</th>
+                    <th scope="col">Tag</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody class="progress-list-body"></tbody>
             </table> 
         </div>
     </div>
 </body>
+
+<script>
+var socket = io.connect("/queue");
+const queueTable = $(".bots-list-body");
+const testingTable = $(".progress-list-body");
+
+socket.on("queueLoaded", function () {
+    socket.emit("queueRequest");
+});
+
+socket.on("queueData", function (queueBots, queueBotsTesting) {
+    queueTable.html("");
+    testingTable.html("");
+    queueBots.forEach((queueBot, index) => {
+        queueTable.append(getQueueBotHTML(queueBot, index));
+    });
+    queueBotsTesting.forEach((queueBotTest, index) => {
+        queueTable.append(getQueueBotTestingHTML(queueBotTest, index))
+    });
+});
+
+function userStartedTesting(userID, botID) {
+    socket.emit("startTesting");
+}
+
+function getQueueBotHTML(queueBot, index) {
+    return (
+`
+<tr class="table-light">
+    ${formatInfo(queueBot, index)}
+    <td>
+        <a target="__blank" href="https://discordapp.com/oauth2/authorize?client_id=${queueBot.botID}&scope=bot&permissions=0&guild_id=<%= bot.config.guilds.testing %>" class="btn btn-primary" style="margin-right: 10px;">Invite (Testing)</a>
+        <button type="button" class="btn btn-warning">Start Testing</button>
+    </td>
+</tr>
+`
+    );
+}
+
+function getQueueBotTestingHTML(queueBot, index) {
+    return (
+`
+<tr class="table-light">
+    ${formatInfo(queueBot, index)}
+    <td>
+        <button type="button" class="btn btn-success">Approve</button>
+        <button type="button" class="btn btn-danger">Deny</button>
+    </td>
+</tr>
+`
+    );
+}
+
+function formatInfo(queueBot, index) {
+    return (
+`
+<th scope="row">${index + 1}.</th>
+<td>${queueBot.prefix}</td>
+<td>${queueBot.tag}</td>
+<td>${queueBot.botID}</td>
+`
+    );
+}
+</script>
 </html>

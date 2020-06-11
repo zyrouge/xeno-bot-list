@@ -70,7 +70,9 @@ module.exports = async (client, message) => {
     try {
         await client.database.Queue.create({
             botID: bot.id,
-            prefix: `${args[1]}`
+            prefix: `${args[1]}`,
+            ownerID: message.author.id,
+            testing: false
         });
 
         Logs.send(`${client.misc.emojis.ticket} ${message.author} added **${bot.username}#${bot.discriminator}** to the queue.`);
