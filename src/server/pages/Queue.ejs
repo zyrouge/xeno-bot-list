@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot List</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.2/umd/popper.min.js"></script>
+    <link rel="stylesheet" href="static/bootstrap.min.css">
+    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <%- include("./components/navbar.ejs") %>
+
+    <div class="container">
+        <div class="jumbotron">
+            <h2>Queue</h2>
+            <p class="lead">Bots in the Queue will appear here.</p>
+            <!-- <hr class="my-4">
+            <p class="lead">
+              <a class="btn btn-primary btn-lg" href="https://discordapp.com/channels/480939855476686849/<%= bot.config.channels.logs %>" role="button">Logs</a>
+            </p> -->
+        </div>
+        <div class="bots-list">
+            <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th scope="col">No.</th>
+                    <th scope="col">Prefix</th>
+                    <th scope="col">Tag</th>
+                    <th scope="col">ID</th>
+                    <th scope="col">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <% queue.forEach((queueBot, index) => { %>
+                        <tr class="table-light">
+                            <th scope="row"><%= index + 1 %>.</th>
+                            <td><%= queueBot.prefix %></td>
+                            <td><%= "hdewvfhe" %></td>
+                            <td><%= queueBot.botID %></td>
+                            <td><button type="button" class="btn btn-primary">Invite</button></td>
+                        </tr>
+                    <% }); %>
+                </tbody>
+            </table> 
+        </div>
+    </div>
+</body>
+</html>

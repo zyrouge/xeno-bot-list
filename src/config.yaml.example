@@ -1,0 +1,11 @@
+token: ""
+prefix: ""
+guild: ""
+channels:
+    invite: ""
+    logs: ""
+roles:
+    website: ""
+    tester: ""
+port: 3000
+color: 0xff0000
