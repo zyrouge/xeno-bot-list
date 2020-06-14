@@ -10,5 +10,6 @@ class Emoji {
 module.exports = {
     tick: new Emoji("<:tick_box:720569924761944085>"),
     cross: new Emoji("<:cross_box:720569991111639081>"),
-    ticket: new Emoji("<:two_tickets:720569990603866212>")
+    ticket: new Emoji("<:two_tickets:720569990603866212>"),
+    trash: new Emoji("<:trash_delete:720947943711965266>")
 }

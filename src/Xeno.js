@@ -8,6 +8,7 @@ module.exports = class Xeno extends Client {
         this.express = require("express")(); /* Express Server */
         this.server = require('http').Server(this.express); /* HTTP Server */
         this.io = require("socket.io")(this.server); /* Socket */
+        this.queueIO = null; /* Queue Socket */
         this.commands = new Collection();
         this.aliases = new Collection();
         this.logger = new (require("./core/Logger"));
@@ -16,6 +17,7 @@ module.exports = class Xeno extends Client {
         this.token = this.config.token;
         this.database = require("./core/Database");
         this.misc = require("./core/Misc");
+        this.func = new (require("./core/Func"))(this);
     }
 
     load() {
@@ -46,7 +48,7 @@ module.exports = class Xeno extends Client {
             });
 
             /* Database */
-            this.database.Queue.sync({ force: false }).then(() => this.logger.log(`Loaded Queue (Database)`));
+            this.database.Bots.sync({ force: false }).then(() => this.logger.log(`Loaded Bots (Database)`));
 
             /* Server */
             require("./server")(this).then(() => this.logger.log(`Listening on PORT ${this.config.port} (Server)`));

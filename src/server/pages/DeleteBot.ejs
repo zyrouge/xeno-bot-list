@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot List</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sanitize-html/1.26.0/sanitize-html.min.js"></script>
+    <%- include("./components/header.ejs") %>
+</head>
+<body>
+    <%- include("./components/navbar.ejs", { bot, user }) %>
+
+    <div class="container">
+        <div class="jumbotron">
+            <h2>Delete</h2>
+            <p><strong>Delete page of <%= botInfo.username %>#<%= botInfo.discriminator %></strong></p>
+        </div>
+        <div class="alert alert-dismissible alert-success" id="success-save" style="display: none;">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Saved changes successfully!</strong>
+        </div>
+        <div class="alert alert-dismissible alert-danger" id="error-save" style="display: none;">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Oopsie! Something went terribly wrong!</strong>
+        </div>
+        <div class="form">
+            <form action="/bots/<%= botInfo.id %>/delete" method="POST">
+                <h4>Are you sure to delete <%= botInfo.username %>#<%= botInfo.discriminator %>?</h4>
+                <p>This action is irreversible!</p>
+                <div class="btn-group" role="group" style="width: 100%;">
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="button" class="btn btn-warning" onclick="abortDelete()">Cancel</button>
+                </div>
+            </form>
+        </div>
+        <br><br>
+    </div>
+</body>
+
+<script>
+$(function() {
+    $("form").submit(function (event) {
+        event.preventDefault();
+
+        const form = $(this);
+        $.ajax({
+            type: form.attr("method"),
+            url: form.attr("action"),
+            dataType: "json",
+            contentType: 'application/json',
+            success: function (resp) {
+                window.location.replace("/@me");
+            }
+        });
+    });
+});
+
+function abortDelete() {
+    window.location.replace("/bots/<%= botInfo.id %>");
+}
+</script>
+
+</style>
+</html>

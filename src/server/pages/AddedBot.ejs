@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot List</title>
+    <%- include("./components/header.ejs") %>
+</head>
+<body>
+    <%- include("./components/navbar.ejs", { bot, user }) %>
+
+    <div class="container">
+        <div class="jumbotron">
+            <h2>Xeno Bot List</h2>
+            <p>Made by <b style="font-weight: bolder;">Zyrouge Development</b></p>
+        </div>
+        <br>
+        <center>
+            <div class="alert alert-dismissible alert-success">
+                <strong>Awesome!</strong> Your bot was added to the Queue.
+            </div>
+        </center>
+    </div>
+</body>
+
+<script>
+$(function () {
+    setTimeout(() => {
+        location.replace("/");
+    }, 10 * 1000);
+});
+</script>
+
+<style>
+.bot-card-avatar {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+@media screen and (max-width: 757px) {
+    .bot-card-col {
+        margin: 0 30px;
+    }
+}
+</style>
+</html>

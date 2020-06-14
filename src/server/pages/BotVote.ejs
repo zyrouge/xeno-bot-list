@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot List</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.26.0/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-duration-format/2.3.2/moment-duration-format.min.js"></script>
+    <%- include("./components/header.ejs") %>
+</head>
+<body>
+    <%- include("./components/navbar.ejs", { bot, user }) %>
+
+    <div class="container">
+        <div class="jumbotron mt-5">
+            <div class="row" style="width: 100%;">
+                <div class="col-sm-2">
+                    <% if (botInfo.avatar) { %>
+                        <img class="card-img-top" src="https://cdn.discordapp.com/avatars/<%= botInfo.id %>/<%= botInfo.avatar %>.png?size=1280" alt="<%= botInfo.username %>">
+                    <% } else { %>
+                        <img class="card-img-top" src="https://cdn.discordapp.com/embed/avatars/<%= (botInfo.id % 5) %>.png" alt="<%= botInfo.username %>">
+                    <% } %>
+                </div>
+                <div class="col-sm">
+                    <div class="row">
+                        <div class="col-sm">
+                            <h3><%= botInfo.username %><small class="text-muted">#<%= botInfo.discriminator %></small></h3>
+                            <p class="text-muted">You can upvote every 24-hours</p>
+                        </div>
+                        <div class="col-sm-3">
+                            <span class="badge badge-danger mb-2" style="font-size: 16px;">Upvotes: <%= dailyUpvotes %></span><br>
+                            <span class="badge badge-info mb-2" style="font-size: 16px;">Total Upvotes: <%= botDB.totalUpvotes %></span>
+                            <a href="/bots/<%= botInfo.id %>" class="badge badge-success" style="font-size: 16px;">Bot Info</a>
+                        </div>
+                    </div>
+                    <hr class="my-4">
+                    <button type="button" class="btn btn-primary btn-lg btn-block" id="upvote">Click to vote</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+const upvoteBtn = $("#upvote");
+
+$(function () {
+    upvoteBtn.click(function (event) {
+        event.preventDefault();
+        if(upvoteBtn.hasClass("disabled")) return;
+    
+        $.ajax({
+            type: "post",
+            responseType: "json",
+            url: "/bots/<%= botInfo.id %>/vote",
+            success: function (resp) {
+                upvoteBtn.addClass("disabled");
+                if(resp.ok) {
+                    upvoteBtn.text("Voted!");
+                } else if(!resp.ok && resp.remaining) {
+                    upvoteBtn.text(`Seems like you have already voted! Come back after ${moment.duration(resp.remaining).format('H[h] m[m] s[s]')}`);
+                } else {
+                    upvoteBtn.text(`Oopsie! ${resp.reason}`);
+                }
+            }
+        });
+    });
+});
+</script>
+
+</html>

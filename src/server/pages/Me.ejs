@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot List</title>
+    <%- include("./components/header.ejs") %>
+</head>
+<body>
+    <%- include("./components/navbar.ejs", { bot, user }) %>
+
+    <div class="container">
+        <div class="jumbotron">
+            <center>
+                <% if (user.avatar) { %>
+                    <img class="card-img-top" src="https://cdn.discordapp.com/avatars/<%= user.id %>/<%= user.avatar %>.png?size=1280" alt="<%= user.tag %>" style="height: 150px; width: 150px; border-radius: 50%;">
+                <% } else { %>
+                    <img class="card-img-top" src="https://cdn.discordapp.com/embed/avatars/<%= (user.id % 5) %>.png" alt="<%= user.tag %>" style="height: 150px; width: 150px; border-radius: 50%;">
+                <% } %>
+                <h3 class="mt-3"><%= user.username %><small class="text-muted">#<%= user.discriminator %></small></h3>
+            </center>
+        </div>
+        <br>
+        <div class="randombots">
+            <h4>Your Bots</h4>
+            <% for(let i = 0; i < bots.length; i++) { %>
+                <div class="row">
+                    <% for(let j = 0; j < bots[i].length; j++) { %>
+                        <div class="col-md-3 mb-3 bot-card-col">
+                            <div class="card">
+                                <% if (bots[i][j].avatar) { %>
+                                    <img class="card-img-top" src="https://cdn.discordapp.com/avatars/<%= bots[i][j].botID %>/<%= bots[i][j].avatar %>.png?size=1280" alt="<%= bots[i][j].tag %>">
+                                <% } else { %>
+                                    <img class="card-img-top" src="https://cdn.discordapp.com/embed/avatars/<%= (bots[i][j].botID % 5) %>.png" alt="<%= bots[i][j].tag %>">
+                                <% } %>
+                                <div class="card-body">
+                                    <h4 class="card-title" style="margin-bottom: 0;"><%= bots[i][j].tag %></h4>
+                                    <center>
+                                        <div class="badges">
+                                            <span class="badge badge-success">Online</span>
+                                            <span class="badge badge-primary">Servers: <%= bots[i][j].guildsCount %></span>
+                                            <span class="badge badge-danger">Upvotes: <%= bots[i][j].upvotes %></span>
+                                        </div>
+                                    </center>
+                                    <p class="card-text"><%= bots[i][j].shortDesc.length > 100 ? bots[i][j].shortDesc.substr(0, 97) + "..." : bots[i][j].shortDesc %></p>
+                                    <div class="btn-group" id="bot-card-bottons" role="group" aria-label="Basic example" style="width: 100%;">
+                                        <a href="/bots/<%= bots[i][j].botID %>" type="button" class="btn btn-primary">View</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+    </div>
+</body>
+
+<style>
+.bot-card-avatar {
+    width: 100%;
+    margin-bottom: 20px;
+}
+
+@media screen and (max-width: 757px) {
+    .bot-card-col {
+        margin: 0 30px;
+    }
+}
+</style>
+</html>

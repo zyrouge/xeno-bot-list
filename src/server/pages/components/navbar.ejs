@@ -1,12 +1,12 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Bot List</a>
+    <a class="navbar-brand" href="/">Xeno</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarColor02" aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
   
     <div class="collapse navbar-collapse" id="navbarColor02">
       <ul class="navbar-nav mr-auto">
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
         </li>
         <li class="nav-item">
@@ -17,26 +17,60 @@
         </li>
         </ul>
         <ul class="nav navbar-nav navbar-right">
+            <li class="nav-item">
+                <a href="/bots/add" class="nav-link">Add Bot</a>
+            </li>
+            <li class="nav-item dropdown mr-2">
+                <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Themes</a>
+                <div class="dropdown-menu">
+                    <center class="btn-group-vertical" style="width: calc(100% - 20px); margin: 0 10px;">
+                        <button type="button" onclick="toggleTheme('white')" class="btn btn-primary" style="background-color: white; color: black; border: 1px solid white;">White</button>
+                        <button type="button" onclick="toggleTheme('dark')" class="btn btn-secondary">Dark</button>
+                        <button type="button" onclick="toggleTheme('ocean')" class="btn btn-primary">Ocean</button>
+                    </center>
+                </div>
+            </li>
             <% if (user) { %>
-                <li class="nav-item dropdown" style="text-align:right;">
-                    <a class="nav-link dropdown-toggle btn btn-primary" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" style="margin: 0 10px; color: white !important; padding: 8px 18px;"><%= user.username %>#<%= user.discriminator %></a>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle btn btn-primary pl-3 pr-3 mr-3" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false" style="color: white !important;"><%= user.username %>#<%= user.discriminator %></a>
                         <div class="dropdown-menu">
                         <a class="dropdown-item" href="/@me">Profile</a>
-                        <a class="dropdown-item" href="/@me/bots">Your Bots</a>
                         <a class="dropdown-item" href="/logout">Logout</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/queue">Queue</a>
+                        <% if (user.staff) { %>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item" href="/queue">Queue</a>
+                        <% } %>
                     </div>
                 </li>
             <% } else { %>
                 <li class="nav-item">
-                    <a href="/login" class="btn btn-primary">Login</a>
+                    <a href="/login" class="btn btn-primary pl-3 pr-3 mr-3">Login</a>
                 </li>
             <% } %>
         </ul>
-      <!-- <form class="form-inline my-2 my-lg-0">
-        <input class="form-control mr-sm-2" type="text" placeholder="Search">
-        <button class="btn btn-secondary my-2 my-sm-0" type="submit">Search</button>
-      </form> -->
+        <div class="form-inline my-2 my-lg-0">
+            <input id="search-box" class="form-control" type="text" placeholder="Search" autocomplete="off">
+            <button id="search-btn" class="btn btn-light my-2 my-sm-0" type="button">Search</button>
+        </div>
     </div>
 </nav>
+
+<script>
+$(function (params) {
+    const searchBtn = $("#search-btn");
+    searchBtn.click(function (event) {
+        event.preventDefault();
+        const searchBox = $("#search-box");
+        const searchTerm = searchBox.val();
+        if(searchTerm) {
+            searchBtn.addClass("disabled");
+            location.replace(`/search?q=${searchTerm}`);
+        }
+    });
+});
+
+function toggleTheme(theme) {
+    localStorage.setItem("theme", theme);
+    location.reload();
+}
+</script>

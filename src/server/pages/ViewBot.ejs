@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bot List</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/1.1.0/marked.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sanitize-html/1.26.0/sanitize-html.min.js"></script>
+    <script>
+        var lodash = _.noConflict();
+    </script>
+    <%- include("./components/header.ejs") %>
+</head>
+<body>
+    <%- include("./components/navbar.ejs", { bot, user }) %>
+
+    <div class="container">
+        <div class="jumbotron mt-5">
+            <div class="row" style="width: 100%;">
+                <div class="col-sm-2">
+                    <% if (botInfo.avatar) { %>
+                        <img class="card-img-top" src="https://cdn.discordapp.com/avatars/<%= botInfo.id %>/<%= botInfo.avatar %>.png?size=1280">
+                    <% } else { %>
+                        <img class="card-img-top" src="https://cdn.discordapp.com/embed/avatars/<%= (botInfo.id % 5) %>.png">
+                    <% } %>
+                </div>
+                <div class="col-sm">
+                    <h3><%= botInfo.username %><small class="text-muted">#<%= botInfo.discriminator %></small></h3>
+                    <% if (botMember && botMember.presence && botMember.presence.status === "online") { %>
+                        <span class="badge badge-success" style="font-size: 16px;">Online</span>
+                    <% } else if (botMember && botMember.presence && botInfo.presence.status === "idle") { %>
+                        <span class="badge badge-warning" style="font-size: 16px;">Idle</span>
+                    <% } else if (botMember && botMember.presence && botInfo.presence.status === "dnd") { %>
+                        <span class="badge badge-danger" style="font-size: 16px;">DND</span>
+                    <% } else { %>
+                        <span class="badge badge-secondary" style="font-size: 16px;">Offline</span>
+                    <% } %>
+                    <span class="badge badge-primary" style="font-size: 16px;">Servers: <%= botDB.guildsCount %></span>
+                    <span class="badge badge-danger" style="font-size: 16px;">Upvotes: <%= dailyUpvotes %></span>
+                    <span class="badge badge-info" style="font-size: 16px;">Total Upvotes: <%= botDB.totalUpvotes %></span>
+                    <hr class="my-4">
+                    <% if (botDB.customInvite) { %>
+                        <a href="<%= botDB.customInvite %>" type="button" class="btn btn-primary pr-3 pl-3 mr-1">Invite</a>
+                    <% } else { %>
+                        <a href="https://discordapp.com/oauth2/authorize?client_id=<%= botInfo.id %>&scope=bot&permissions=0" type="button" class="btn btn-primary pr-3 pl-3 mr-1">Invite</a>
+                    <% } %>
+                    <a href="/bots/<%= botInfo.id %>/vote" type="button" class="btn btn-info pr-3 pl-3 mr-1">Vote</a>
+                    <% if (botDB.botWebsite) { %>
+                        <a href="<%= botDB.botWebsite %>" type="button" class="btn btn-success pr-3 pl-3 mr-1">Website</a>
+                    <% } %>
+                    <% if (botDB.botServer) { %>
+                        <a href="<%= botDB.botServer %>" type="button" class="btn btn-info pr-3 pl-3 mr-1">Support</a>
+                    <% } %>
+                    <% if (user && user.id === botDB.ownerID) { %>
+                        <a href="/bots/<%= botInfo.id %>/edit" type="button" class="btn btn-warning pr-3 pl-3 mr-1">Edit</a>
+                        <a href="/bots/<%= botInfo.id %>/delete" type="button" class="btn btn-danger pr-3 pl-3 mr-1">Delete</a>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+        <div class="info">
+            <p style="color: white; mix-blend-mode: difference; font-size: 16px;">Prefix: <code style="padding: 3px 8px; font-weight: bold;"><%= botDB.prefix %></code></p>
+            <p style="color: white; mix-blend-mode: difference; font-size: 16px;">Owner: <span class="text-primary"><strong><%= botOwner.username %>#<%= botOwner.discriminator %></strong></span></p>
+            <% if (botDB.botTags.length) { %>
+                <p style="color: white; mix-blend-mode: difference; font-size: 16px;">Tags: 
+                    <% botDB.botTags.forEach(botTag => { %>
+                        <span class="badge badge-dark"><%= botTag %></span>
+                    <% }) %>
+                </p>
+            <% } %>
+        </div>
+        <div class="card bg-light mb-3">
+            <div class="card-body">
+                <div id="bot-description"><%= botDB.longDesc %></div>
+            </div>
+        </div>
+    </div>
+</body>
+
+<script>
+$(document).ready(function () {
+    const descriptionBox = $("#bot-description");
+    const descriptionBoxText = descriptionBox.text() || descriptionBox.val();
+    const markdownRender = marked(descriptionBoxText);
+    const allowedTags = sanitizeHtml.defaults.allowedTags.concat(["img", "center"]);
+    const sanitizedRender = sanitizeHtml(markdownRender, { allowedTags });
+    descriptionBox.html(sanitizedRender);
+});
+</script>
+
+</html>

@@ -1,3 +1,12 @@
+/* Upvotes */
+const Enmap = require("enmap");
+const Upvotes = new Enmap({
+    name: "upvotes",
+    autoFetch: true,
+    fetchAll: false
+});
+
+/* Sequelize */
 const { Sequelize } = require("sequelize");
 const fs = require("fs");
 const path = require("path");
@@ -11,6 +20,7 @@ const sequelize = new Sequelize({
     logging: false
 });
 
-const Queue = sequelize.import("Queue");
+const Bots = sequelize.import("Bots");
 
-module.exports = { Queue };
+/* Export */
+module.exports = { Bots, Upvotes };

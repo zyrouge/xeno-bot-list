@@ -4,11 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bot List</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.4.2/umd/popper.min.js"></script>
-    <link rel="stylesheet" href="static/bootstrap.min.css">
-    <!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"> -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <%- include("./components/header.ejs") %>
     <script src="/socket.io/socket.io.js"></script>
 </head>
 <body>
@@ -63,23 +59,40 @@ var socket = io.connect("/queue");
 const queueTable = $(".bots-list-body");
 const testingTable = $(".progress-list-body");
 
-socket.on("queueLoaded", function () {
+socket.on("queuePageLoaded", function () {
+    LOG("Connected to Server!", "Requesting data...");
+    socket.emit("queueRequest");
+});
+
+socket.on("queueServerRequest", function () {
+    LOG("New bot has been added!", "Requesting data...");
     socket.emit("queueRequest");
 });
 
 socket.on("queueData", function (queueBots, queueBotsTesting) {
+    LOG("Data received!");
     queueTable.html("");
     testingTable.html("");
     queueBots.forEach((queueBot, index) => {
         queueTable.append(getQueueBotHTML(queueBot, index));
     });
     queueBotsTesting.forEach((queueBotTest, index) => {
-        queueTable.append(getQueueBotTestingHTML(queueBotTest, index))
+        testingTable.append(getQueueBotTestingHTML(queueBotTest, index))
     });
+    LOG("Page Updated!");
 });
 
 function userStartedTesting(userID, botID) {
-    socket.emit("startTesting");
+    LOG(`Request to test ${botID}`);
+    socket.emit("startTesting", userID, botID);
+}
+
+function userBotDeny(userID, botID) {
+    LOG(`Request to deny ${botID}, awaiting reason`);
+    const reason = prompt("Please enter the reason");
+    if(!reason) return LOG(`Request to deny ${botID} failed as no reason was provided.`);
+    LOG(`Request to deny ${botID} is being processed!`);
+    socket.emit("botDecline", userID, botID, reason);
 }
 
 function getQueueBotHTML(queueBot, index) {
@@ -88,12 +101,17 @@ function getQueueBotHTML(queueBot, index) {
 <tr class="table-light">
     ${formatInfo(queueBot, index)}
     <td>
-        <a target="__blank" href="https://discordapp.com/oauth2/authorize?client_id=${queueBot.botID}&scope=bot&permissions=0&guild_id=<%= bot.config.guilds.testing %>" class="btn btn-primary" style="margin-right: 10px;">Invite (Testing)</a>
-        <button type="button" class="btn btn-warning">Start Testing</button>
+        ${getQueueBotButtons(queueBot)}
+        <button type="button" class="btn btn-danger" onclick="userBotDeny('<%= user.id %>', '${queueBot.botID}')">Deny</button>
     </td>
 </tr>
 `
     );
+}
+
+function getQueueBotButtons(queueBot) {
+    if(queueBot.inTesting) return `<button type="button" class="btn btn-warning" onclick="userStartedTesting('<%= user.id %>', '${queueBot.botID}')" style="margin-right: 10px;">Start Testing</button>`;
+    else return `<a target="__blank" href="https://discordapp.com/oauth2/authorize?client_id=${queueBot.botID}&scope=bot&permissions=0&guild_id=<%= bot.config.guilds.testing %>" class="btn btn-primary" style="margin-right: 10px;">Invite</a>`;
 }
 
 function getQueueBotTestingHTML(queueBot, index) {
@@ -102,8 +120,8 @@ function getQueueBotTestingHTML(queueBot, index) {
 <tr class="table-light">
     ${formatInfo(queueBot, index)}
     <td>
-        <button type="button" class="btn btn-success">Approve</button>
-        <button type="button" class="btn btn-danger">Deny</button>
+        <a target="__blank" href="https://discordapp.com/oauth2/authorize?client_id=${queueBot.botID}&scope=bot&permissions=0&guild_id=<%= bot.config.guilds.main %>" class="btn btn-success" style="margin-right: 10px;">Approve</a>
+        <button type="button" class="btn btn-danger" onclick="userBotDeny('<%= user.id %>', '${queueBot.botID}')">Deny</button>
     </td>
 </tr>
 `
@@ -119,6 +137,15 @@ function formatInfo(queueBot, index) {
 <td>${queueBot.botID}</td>
 `
     );
+}
+
+function LOG(...texts) {
+    texts.forEach(text => (console.log(
+        `%c${new Date().toLocaleTimeString([], { hour12: false })}` +
+        ` %c[DEBUG] ${text}`,
+        "color: grey;",
+        "color: none;"
+    )));
 }
 </script>
 </html>

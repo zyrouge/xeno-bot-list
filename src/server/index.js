@@ -1,14 +1,15 @@
 const path = require("path");
 const session = require("express-session");
+const SQLiteStore = require('connect-sqlite3')(session);
 const { static } = require("express");
 const passport = require("passport");
 const { Strategy } = require("passport-discord").Strategy;
+const _ = require("lodash");
 
 module.exports = (client) => new Promise((resolve) => {
     
     const server = client.server,
-    app = client.express,
-    io = client.io;
+    app = client.express;
 
     app.use(require("helmet")());
     app.disable('x-powered-by');
@@ -18,11 +19,67 @@ module.exports = (client) => new Promise((resolve) => {
     app.set('views', path.join(__dirname, "pages"));
     app.use('/static', static(path.join(__dirname, "css")));
 
-    const MemoryStore = require('memorystore')(session);
+    /* Authentication */
+    bindAuth(app, client);
+
+    /* Queue */
+    const QueueRouter = require("./routers/Queue")(client);
+    app.use("/queue", QueueRouter);
+
+    /* Bot */
+    const BotRouter = require("./routers/Bots")(client);
+    app.use("/bots", BotRouter);
+
+    /* Bot */
+    const MeRouter = require("./routers/Me")(client);
+    app.use("/@me", MeRouter);
+
+    /* Search */
+    app.use("/search", require("./routers/Search"));
+
+    /* Other Routes */
+    app.get("/ping", (req, res) => res.status(200).send({ ok: true }));
+    app.get("/", async (req, res) => {
+        const FetchedBots = await client.database.Bots.findAll({
+            where: { isApproved: true },
+            limit : 12
+        }) || [];
+        const Bots = [];
+        FetchedBots.map(bot => bot.dataValues).forEach(bot => {
+            const Bot = client.users.cache.get(bot.botID);
+            if(Bot) {
+                bot.tag = `${Bot.username}#${Bot.discriminator}`;
+                bot.avatar = Bot.avatar;
+                bot.upvotes = client.database.Upvotes.get(`${bot.botID}_upvotes_${new Date().toISOString().slice(0, 10)}`) || 0;
+                Bots.push(bot);
+            }
+        });
+        res.render("Index.ejs", { bot: req.bot, user: (req.user || null), bots: _.chunk(Bots, 4) });
+    });
+
+    server.listen(client.config.port);
+    resolve();
+
+});
+
+function checkAuth(req, res, next) {
+    if (req.isAuthenticated()) return next();
+    res.redirect("/login");
+}
+
+module.exports.checkAuth = checkAuth;
+
+async function checkStaff(req, res, next) {
+    if(!req.isAuthenticated()) return res.redirect("/login");
+    if(req.user.staff) return next();
+    res.redirect("/");
+}
+
+module.exports.checkStaff = checkStaff;
+
+function bindAuth(app, client) {
     app.use(session({
-        store: new MemoryStore({
-            checkPeriod: 86400000
-        }),
+        store: new SQLiteStore,
         secret: 'XenoBotList69',
         resave: false,
         saveUninitialized: false
@@ -65,43 +122,13 @@ module.exports = (client) => new Promise((resolve) => {
         res.redirect('/');
     });
 
-    app.use((req, res, next) => { req.bot = client; next(); });
-
-    app.get("/ping", (req, res) => res.status(200).send({ ok: true }));
-    app.get("/queue", async (req, res) => {
-        res.render("Queue.ejs", { bot: req.bot, user: req.user || null });
+    app.use(async (req, res, next) => {
+        req.bot = client;
+        const isStaff = req.user ? await req.bot.func.isStaff(req.user.id) : false;
+        if(req.user) {
+            if(isStaff) req.user.staff = true;
+            else req.user.staff = false;
+        }
+        next();
     });
-
-    io.of("/queue").on("connection", (socket) => {
-        socket.emit("queueLoaded");
-
-        socket.on("queueRequest", async () => {
-            const fetchedQueueBots = await client.database.Queue.findAll() || [];
-            const queueBots = [];
-            const queueBotsTesting = [];
-
-            for (let i = 0; i < fetchedQueueBots.length; i++) {
-                const queueBotInfo = fetchedQueueBots[i].dataValues;
-                if(queueBotInfo) {
-                    const queueBotRaw = await client.users.fetch(queueBotInfo.botID) || null;
-                    if(queueBotRaw) {
-                        queueBotInfo.tag = `${queueBotRaw.username}#${queueBotRaw.discriminator}`;
-                        if(queueBotInfo.testing) queueBotsTesting.push(queueBotInfo);
-                        else queueBots.push(queueBotInfo);
-                    }
-                }
-            }
-
-            socket.emit("queueData", queueBots, queueBotsTesting);
-        });
-    });
-
-    server.listen(client.config.port);
-    resolve();
-
-});
-
-function checkAuth(req, res, next) {
-    if (req.isAuthenticated()) return next();
-    res.redirect('/login');
 }

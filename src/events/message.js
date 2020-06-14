@@ -1,8 +1,6 @@
 module.exports = async (client, message) => {
     if(message.author.bot) return;
 
-    client.queue(client, message); /* Handle Queue */
-
     const prefixRegex = new RegExp(`^(<@!?${client.user.id}>|${client.config.prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})\\s*`);
 	if (!prefixRegex.test(message.content)) return;
 
