@@ -1,3 +1,5 @@
+const _ = require("lodash");
+
 module.exports = {
     name: "bots",
     aliases: ["bot", "botinfo"],
@@ -19,37 +21,31 @@ module.exports = {
                     fields: [
                         {
                             name: `Prefix`,
-                            value: `${botDB.dataValues.prefix}`,
-                            inline: true
+                            value: `${botDB.dataValues.prefix}`
                         },
                         {
                             name: `Owner`,
-                            value: `<@${botDB.dataValues.ownerID}>`,
-                            inline: true
+                            value: `<@${botDB.dataValues.ownerID}>`
                         },
                         {
                             name: `Links`,
                             value: [
-                                `${botDB.dataValues.botWebsite ? `**Website:** ${botDB.dataValues.botWebsite}`: ""}`,
-                                `${botDB.dataValues.botServer ? `**Support Server:** https://discord.gg/${botDB.dataValues.botServer}`: ""}`,
-                                `**Invite:** ${botDB.dataValues.customInvite || `https://discordapp.com/oauth2/authorize?client_id=${user.id}&scope=bot&permissions=0`}`
-                            ].filter(x => x).join("\n"),
-                            inline: true
+                                `${botDB.dataValues.botWebsite ? `**Website:** [Click here](${botDB.dataValues.botWebsite}`: ""})`,
+                                `${botDB.dataValues.botServer ? `**Support Server:** [Click here](https://discord.gg/${botDB.dataValues.botServer}`: ""})`,
+                                `**Invite:** [Click here](${botDB.dataValues.customInvite || `https://discordapp.com/oauth2/authorize?client_id=${user.id}&scope=bot&permissions=0`})`
+                            ].filter(x => x).join("\n")
                         },
                         {
                             name: `Tags`,
-                            value: `${botDB.dataValues.botTags.join(" ,")}`,
-                            inline: true
+                            value: `${botDB.dataValues.botTags.map(x => `${_.startCase(_.toLower(x))}`).join(", ")}`
                         },
                         {
                             name: `Upvotes`,
-                            value: `**Today's Upvotes:** ${dailyUpvotes}\n**Total Upvotes:** ${botDB.dataValues.totalUpvotes}`,
-                            inline: true
+                            value: `**Today's Upvotes:** ${dailyUpvotes}\n**Total Upvotes:** ${botDB.dataValues.totalUpvotes}`
                         },
                         {
                             name: `Guilds`,
-                            value: `${botDB.dataValues.guildsCount} Servers`,
-                            inline: true
+                            value: `${botDB.dataValues.guildsCount} Servers`
                         },
                         {
                             name: `Others`,
@@ -57,8 +53,7 @@ module.exports = {
                                 `**Submitted on:** ${new Date(botDB.dataValues.submittedOn).toLocaleString()}`,
                                 `**Approved on:** ${new Date(botDB.dataValues.approvedOn).toLocaleString()}`,
                                 `**Tested by:** <@${botDB.dataValues.testedBy}>`
-                            ].join("\n"),
-                            inline: true
+                            ].join("\n")
                         },
                     ],
                     timestamp: new Date(),
