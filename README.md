@@ -21,5 +21,5 @@ Discord: https://zyrouge.gq/discord
 
 ---
 
-License **GPL-2.0**
+License **GPL-3.0**
 > *Must not edit the source code or remove the `LICENSE` file* (Pull requests are allowed)
