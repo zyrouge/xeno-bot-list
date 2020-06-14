@@ -33,7 +33,7 @@ module.exports = (client) => new Promise((resolve) => {
 
     /* Bot */
     const MeRouter = require("./routers/Me")(client);
-    app.use("/@me", MeRouter);
+    app.use("/me", MeRouter);
 
     /* Search */
     app.use("/search", require("./routers/Search"));
