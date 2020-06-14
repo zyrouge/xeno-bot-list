@@ -28,7 +28,7 @@ async function QueueBotApprove(client, member) {
     }
 
     member.edit({
-        nick: `[ ${queueDB.dataValues.prefix} ] ${member.user.tag}`
+        nick: `[ ${queueDB.dataValues.prefix} ] ${member.user.username}`
     }).catch(() => {});
 
     const Tester = await member.guild.members.fetch(queueDB.dataValues.testedBy).catch(() => {}) || null;
