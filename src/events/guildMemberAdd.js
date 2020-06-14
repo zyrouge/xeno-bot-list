@@ -38,6 +38,8 @@ async function QueueBotApprove(client, member) {
         approvedOn: `${Date.now()}`,
     }, { where: { botID: member.user.id } })
     .then(() => {
+        Owner.roles.add(client.config.roles.developers).catch(() => {});
+        member.roles.add(client.config.roles.bots).catch(() => {});
         if(client.queueIO) client.queueIO.emit("queueServerRequest");
         if(Logs) {
             if(Tester) Logs.send(`${client.misc.emojis.tick} **${member.user.username}#${member.user.discriminator}** by <@${queueDB.dataValues.ownerID}> was approved by **${Tester.user.username}#${Tester.user.discriminator}**.`);
