@@ -56,6 +56,7 @@ module.exports = {
                             ].join("\n")
                         },
                     ],
+                    color: client.config.color,
                     timestamp: new Date(),
                     footer: {
                         text: client.user.username + " Bot List"
@@ -72,6 +73,7 @@ module.exports = {
                         icon_url: user.avatarURL()
                     },
                     description: `${botDB.map(bot => `<@${bot.dataValues.botID}>`).join("\n")}`,
+                    color: client.config.color,
                     timestamp: new Date(),
                     footer: {
                         text: client.user.username + " Bot List"
