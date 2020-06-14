@@ -30,8 +30,8 @@ module.exports = {
                         {
                             name: `Links`,
                             value: [
-                                `${botDB.dataValues.botWebsite ? `**Website:** [Click here](${botDB.dataValues.botWebsite}`: ""})`,
-                                `${botDB.dataValues.botServer ? `**Support Server:** [Click here](https://discord.gg/${botDB.dataValues.botServer}`: ""})`,
+                                `${botDB.dataValues.botWebsite ? `**Website:** [Click here](${botDB.dataValues.botWebsite})`: ""}`,
+                                `${botDB.dataValues.botServer ? `**Support Server:** [Click here](https://discord.gg/${botDB.dataValues.botServer})`: ""}`,
                                 `**Invite:** [Click here](${botDB.dataValues.customInvite || `https://discordapp.com/oauth2/authorize?client_id=${user.id}&scope=bot&permissions=0`})`
                             ].filter(x => x).join("\n")
                         },
@@ -50,8 +50,8 @@ module.exports = {
                         {
                             name: `Others`,
                             value: [
-                                `**Submitted on:** ${new Date(botDB.dataValues.submittedOn).toLocaleString()}`,
-                                `**Approved on:** ${new Date(botDB.dataValues.approvedOn).toLocaleString()}`,
+                                `**Submitted on:** ${new Date(parseInt(botDB.dataValues.submittedOn)).toLocaleString()}`,
+                                `**Approved on:** ${new Date(parseInt(botDB.dataValues.approvedOn)).toLocaleString()}`,
                                 `**Tested by:** <@${botDB.dataValues.testedBy}>`
                             ].join("\n")
                         },

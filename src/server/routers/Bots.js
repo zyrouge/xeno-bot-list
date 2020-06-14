@@ -78,28 +78,31 @@ module.exports = (client) => {
         const botID = `${req.params.botID}`;
         const botDB = await client.database.Bots.findOne({ where: { botID } });
         if(!botDB || !botDB.dataValues) return res.redirect("/404");
-        if(req.user.id !== botDB.dataValues.ownerID) return res.redirect("/404");
-        const bot = await client.users.fetch(botID).catch(() => {}) || null;
-        if(!bot) {
-            await client.queue.autoDelete(client, botID, "Bot doesn't exist");
-            return res.redirect("/404");
-        }
-        res.render("DeleteBot.ejs", { bot: req.bot, botDB, botInfo: bot, user: (req.user || null) });
+        if(req.user.id === botDB.dataValues.ownerID || req.user.staff) {
+            const bot = await client.users.fetch(botID).catch(() => {}) || null;
+            if(!bot) {
+                await client.queue.autoDelete(client, botID, "Bot doesn't exist");
+                return res.redirect("/404");
+            }
+            res.render("DeleteBot.ejs", { bot: req.bot, botDB, botInfo: bot, user: (req.user || null) });
+        } else return res.redirect("/404");
     });
 
     router.post("/:botID/delete", checkAuth, async (req, res) => {
         const botID = `${req.params.botID}`;
         const botDB = await client.database.Bots.findOne({ where: { botID } });
         if(!botDB || !botDB.dataValues) return res.redirect("/404");
-        if(req.user.id !== botDB.dataValues.ownerID && !req.user.staff) return res.redirect("/404");
-        if(!botDB.dataValues.isApproved && client.queueIO) client.queueIO.emit("queueServerRequest");
-        client.queue.handleDelete(client, botID, req.user)
-        .then(() => {
-            res.status(201).json({ message: "Deleted the bot", code: "OK" });
-        })
-        .catch((e) => {
-            res.status(500).json({ message: "INTERNAL_SERVER_ERROR", code: e });
-        });
+        if(req.user.id === botDB.dataValues.ownerID || req.user.staff) {
+            client.queue.handleDelete(client, botID, req.user)
+            .then(() => {
+                res.status(201).json({ message: "Deleted the bot", code: "OK" });
+                if(!botDB.dataValues.isApproved && client.queueIO) client.queueIO.emit("queueServerRequest");
+            })
+            .catch((e) => {
+                res.status(500).json({ message: "INTERNAL_SERVER_ERROR", code: e });
+            });
+        } else return res.redirect("/404");
+        
     });
 
     router.get("/:botID", async (req, res) => {
@@ -116,9 +119,11 @@ module.exports = (client) => {
                 return res.redirect("/404");
             }
         } else {
-            if(botDB.dataValues.ownerID !== req.user.id || (req.user && !req.user.staff)) return res.redirect("/404");
-            bot = await client.users.fetch(botID).catch(() => {}) || null;
-            owner = await client.users.fetch(botDB.ownerID).catch(() => {}) || null;
+            if(!req.user) return res.redirect("/404");
+            if(botDB.dataValues.ownerID === req.user.id || req.user.staff) {
+                bot = await client.users.fetch(botID).catch(() => {}) || null;
+                owner = await client.users.fetch(botDB.ownerID).catch(() => {}) || null;
+            } else return res.redirect("/404");
         }
         botDB.dataValues.botTags = botDB.dataValues.botTags.map(x => `${_.startCase(_.toLower(x))}`);
         const dailyUpvotes = await client.database.Upvotes.get(`${botID}_upvotes_${new Date().toISOString().slice(0, 10)}`) || 0;
