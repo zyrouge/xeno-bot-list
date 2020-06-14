@@ -116,7 +116,7 @@ module.exports = (client) => {
                 return res.redirect("/404");
             }
         } else {
-            if(botDB.dataValues.ownerID !== req.user.id) return res.redirect("/404");
+            if(botDB.dataValues.ownerID !== req.user.id || (req.user && !req.user.staff)) return res.redirect("/404");
             bot = await client.users.fetch(botID).catch(() => {}) || null;
             owner = await client.users.fetch(botDB.ownerID).catch(() => {}) || null;
         }

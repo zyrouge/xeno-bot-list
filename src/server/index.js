@@ -98,7 +98,7 @@ function bindAuth(app, client) {
         clientID: client.config.bot.id,
         clientSecret: client.config.bot.secret,
         callbackURL: client.config.bot.redirect,
-        scope: ['identify', 'email']
+        scope: ['identify']
     }, function(accessToken, refreshToken, profile, done) {
         process.nextTick(function() {
             return done(null, profile);
@@ -109,7 +109,7 @@ function bindAuth(app, client) {
     app.use(passport.session());
 
     app.get('/login', (req, res) => {
-        res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${client.config.bot.id}&redirect_uri=${encodeURIComponent(client.config.bot.redirect)}&response_type=code&scope=identify%20email`);
+        res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${client.config.bot.id}&redirect_uri=${encodeURIComponent(client.config.bot.redirect)}&response_type=code&scope=identify`);
     });
 
     app.get('/auth/callback',

@@ -102,7 +102,8 @@ function getQueueBotHTML(queueBot, index) {
     ${formatInfo(queueBot, index)}
     <td>
         ${getQueueBotButtons(queueBot)}
-        <button type="button" class="btn btn-danger" onclick="userBotDeny('<%= user.id %>', '${queueBot.botID}')">Deny</button>
+        <button type="button" class="btn btn-danger" onclick="userBotDeny('<%= user.id %>', '${queueBot.botID}')" style="margin-right: 10px;">Deny</button>
+        <a href="/bots/${queueBot.botID}" type="button" class="btn btn-danger">View</a>
     </td>
 </tr>
 `
