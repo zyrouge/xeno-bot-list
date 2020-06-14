@@ -1,7 +1,7 @@
 const path = require("path");
 const session = require("express-session");
 const SQLiteStore = require('connect-sqlite3')(session);
-const { static } = require("express");
+const express = require("express");
 const passport = require("passport");
 const { Strategy } = require("passport-discord").Strategy;
 const _ = require("lodash");
@@ -18,7 +18,8 @@ module.exports = (client) => new Promise((resolve) => {
     app.use(require("express").urlencoded({ extended: false }));
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, "pages"));
-    app.use('/static', static(path.join(__dirname, "css")));
+    app.use('/static', express.static(path.join(__dirname, "css")));
+    app.use('/assets', express.static(path.join(__dirname, "assets")));
 
     /* Authentication */
     bindAuth(app, client);
