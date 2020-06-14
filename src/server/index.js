@@ -14,7 +14,8 @@ module.exports = (client) => new Promise((resolve) => {
     app.use(require("helmet")());
     app.disable('x-powered-by');
 
-    app.use(require("body-parser").json());
+    app.use(require("express").json());
+    app.use(require("express").urlencoded({ extended: false }));
     app.set('view engine', 'ejs');
     app.set('views', path.join(__dirname, "pages"));
     app.use('/static', static(path.join(__dirname, "css")));
