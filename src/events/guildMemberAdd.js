@@ -31,6 +31,10 @@ async function QueueBotApprove(client, member) {
         nick: `[ ${queueDB.dataValues.prefix} ] ${member.user.username}`
     }).catch(() => {});
 
+    const TestingGuild = client.guilds.cache.get(client.config.guilds.testing);
+    const botInTesting = TestingGuild.members.cache.get(member.user.id) || null;
+    if(botInTesting) botInTesting.kick().catch(() => {});
+
     const Tester = await member.guild.members.fetch(queueDB.dataValues.testedBy).catch(() => {}) || null;
     client.database.Bots.update({
         inMain: true,
