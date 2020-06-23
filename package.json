@@ -4,14 +4,11 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
-    "start": "node ."
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "engines": {
-    "node": "12.x"
-  },
   "dependencies": {
     "better-sqlite3": "^7.1.0",
     "body-parser": "^1.19.0",
@@ -22,7 +19,7 @@
     "enmap": "^5.3.1",
     "express": "^4.17.1",
     "express-session": "^1.17.1",
-    "helmet": "^3.23.0",
+    "helmet": "^3.22.1",
     "lodash": "^4.17.15",
     "memorystore": "^1.6.2",
     "passport": "^0.4.1",
