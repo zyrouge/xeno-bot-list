@@ -11,6 +11,8 @@ Discord: https://zyrouge.gq/discord
 
 ---
 
+[![Run on Repl.it](https://repl.it/badge/github/zyrouge/xeno-bot-list)](https://repl.it/github/zyrouge/xeno-bot-list)
+
 #### Hosting your own instance
 
 * Download NodeJS
