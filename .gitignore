@@ -1,4 +1,4 @@
-config.yaml
+src/config.yaml
 node_modules/
 package-lock.json
 src/storage/database.sqlite

@@ -1,11 +1,19 @@
 token: ""
 prefix: ""
-guild: ""
+guilds:
+    main: ""
+    testing: ""
 channels:
     invite: ""
     logs: ""
 roles:
     website: ""
     tester: ""
+    bots: ""
+    developers: "
 port: 3000
-color: 0xff0000
+color: 0x7289da
+bot:
+    id: ""
+    secret: ""
+    redirect: ""
