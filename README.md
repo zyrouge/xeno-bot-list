@@ -3,6 +3,8 @@ Made by **ZYROUGE#0950**
 
 ---
 
+[![Run on Repl.it](https://repl.it/badge/github/zyrouge/xeno-bot-list)](https://repl.it/github/zyrouge/xeno-bot-list)
+
 #### Source code **Xeno Bot List**
 
 URL: https://botlist.zyrouge.gq
