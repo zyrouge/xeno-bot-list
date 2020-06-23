@@ -19,6 +19,10 @@ Discord: https://zyrouge.gq/discord
 * Rename `config.yaml.example` to `config.yaml`
 * Run it using `node .`
 
+#### Hosting on Repl.it
+
+[![Run on Repl.it](https://repl.it/badge/github/zyrouge/xeno-bot-list)](https://repl.it/github/zyrouge/xeno-bot-list)
+
 ---
 
 License **GPL-3.0**
