@@ -17,3 +17,6 @@ bot:
     id: ""
     secret: ""
     redirect: ""
+    scopes:
+        - identify
+        - guilds.join

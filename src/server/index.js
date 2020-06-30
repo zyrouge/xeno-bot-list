@@ -5,7 +5,7 @@ const express = require("express");
 const passport = require("passport");
 const { Strategy } = require("passport-discord").Strategy;
 const _ = require("lodash");
-// const axios = require("axios");
+const axios = require("axios");
 
 module.exports = (client) => new Promise((resolve) => {
     
@@ -81,7 +81,7 @@ async function checkStaff(req, res, next) {
 
 module.exports.checkStaff = checkStaff;
 
-function bindAuth(app, client) {
+function bindAuth (app, client) {
     app.use(session({
         store: new SQLiteStore,
         secret: 'XenoBotList69',
@@ -101,9 +101,10 @@ function bindAuth(app, client) {
         clientID: client.config.bot.id,
         clientSecret: client.config.bot.secret,
         callbackURL: client.config.bot.redirect,
-        scope: ['identify']
+        scope: client.config.bot.scopes
     }, function(accessToken, refreshToken, profile, done) {
-        process.nextTick(function() {
+        process.nextTick(function () {
+            profile.tokens = { accessToken };
             return done(null, profile);
         });
     }));
@@ -112,7 +113,7 @@ function bindAuth(app, client) {
     app.use(passport.session());
 
     app.get('/login', (req, res) => {
-        res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${client.config.bot.id}&redirect_uri=${encodeURIComponent(client.config.bot.redirect)}&response_type=code&scope=identify`);
+        res.redirect(`https://discord.com/api/oauth2/authorize?client_id=${client.config.bot.id}&redirect_uri=${encodeURIComponent(client.config.bot.redirect)}&response_type=code&scope=${encodeURIComponent(client.config.bot.scopes.join(" "))}`);
     });
 
     app.get('/auth/callback',
@@ -129,7 +130,7 @@ function bindAuth(app, client) {
     app.use(async (req, res, next) => {
         req.bot = client;
         const isStaff = req.user ? await req.bot.func.isStaff(req.user.id) : false;
-        if(req.user) {
+        if (req.user) {
             if(isStaff) req.user.staff = true;
             else req.user.staff = false;
         }

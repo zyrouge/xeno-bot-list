@@ -4,11 +4,32 @@ const { checkAuth } = require("../");
 module.exports = (client) => {
     const router = Router();
 
-    router.get("/success", checkAuth, (req, res) => {
+    router.use(checkAuth);
+    router.use(async (req, res, next) => {
+        try {
+            const guild = client.guilds.cache.get(client.config.guilds.main);
+            const member = await guild.members.fetch(req.user.id).catch(() => { }) || null;
+            if (!member) {
+                if (client.config.bot.scopes.includes("guilds.join") && req.user.tokens && req.user.tokens.accessToken) {
+                    client.guilds.cache.get(client.config.guilds.main).addMember(req.user.id, {
+                        accessToken: req.user.tokens.accessToken
+                    }).catch(() => { });
+                    next();
+                } else {
+                    const invite = await guild.channels.cache.get(client.config.channels.logs).createInvite();
+                    res.redirect(invite);
+                }
+            } else next();
+        } catch (e) {
+            res.json({ code: 500, message: "Something went wrong" });
+        }
+    });
+
+    router.get("/success", (req, res) => {
         res.render("AddedBot.ejs", { bot: req.bot, user: (req.user || null) });
     });
 
-    router.post("/submit", checkAuth, (req, res) => {
+    router.post("/submit", (req, res) => {
         client.queue.handleAdd(client, req.body, req.user)
         .then(() => {
             res.status(201).json({ message: "Added to queue", code: "OK" });
@@ -25,7 +46,7 @@ module.exports = (client) => {
         });
     });
 
-    router.get("/", checkAuth, (req, res) => {
+    router.get("/", (req, res) => {
         res.render("AddBot.ejs", { bot: req.bot, user: (req.user || null) });
     });
 
