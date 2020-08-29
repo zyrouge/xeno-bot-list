@@ -1,3 +1,5 @@
+> **No Longer Maintained**
+
 ## [Xeno Bot List](https://botlist.zyrouge.gq)
 Made by **ZYROUGE#0950**
 
