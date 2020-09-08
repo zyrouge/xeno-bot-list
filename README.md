@@ -1,4 +1,4 @@
-> **No Longer Maintained**
+> **No Longer Maintained (Outdated)**
 
 ## [Xeno Bot List](https://botlist.zyrouge.gq)
 Made by **ZYROUGE#0950**
@@ -7,7 +7,7 @@ Made by **ZYROUGE#0950**
 
 #### Source code **Xeno Bot List**
 
-URL: https://botlist.zyrouge.gq
+URL: https://dev.zyrouge.gq/botlist
 
 Discord: https://zyrouge.gq/discord
 
